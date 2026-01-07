@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  openbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openbot
+    restart: always  # 崩溃自动重启
+    environment:
+      # 核心配置（优先从.env读取，也可直接写在这里）
+      - BOT_TOKEN=${BOT_TOKEN}
+      - API_ID=${API_ID}
+      - API_HASH=${API_HASH}
+      - ADMIN_ID=${ADMIN_ID}
+      - LOG_LEVEL=INFO
+      # 可选：代理配置（如果需要）
+      # - HTTP_PROXY=http://proxy:7890
+      # - HTTPS_PROXY=http://proxy:7890
+    volumes:
+      # 持久化关键目录（容器外存储，避免数据丢失）
+      - ./logs:/app/logs
+      - ./sessions:/app/sessions
+      - ./download:/app/download
+      # 可选：挂载.env文件（替代environment）
+      # - ./.env:/app/.env
+    networks:
+      - openbot-network
+    # 可选：限制资源
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+# 自定义网络
+networks:
+  openbot-network:
+    driver: bridge

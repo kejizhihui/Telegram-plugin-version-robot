@@ -1,0 +1,19 @@
+# 核心依赖
+python-telegram-bot==22.5
+Telethon==1.42.0
+python-dotenv==1.0.0
+
+# 工具类依赖
+psutil==7.2.0          # 磁盘监控功能
+ffmpeg-python==0.2.0   # 媒体处理（项目引用）
+APScheduler==3.10.1    # 定时任务（dl_all 监控）
+pytz==2025.2           # 时区处理
+tzlocal==5.3.1         # 本地时区适配
+cryptg==0.5.2          # Telethon 加密
+pyaes==1.6.1           # 加密相关
+PySocks==1.7.1         # 代理支持
+httpx==0.28.1          # HTTP 请求（备用）
+
+# 可选：开发/调试依赖
+# ipython==8.20.0
+# pytest==7.4.4
