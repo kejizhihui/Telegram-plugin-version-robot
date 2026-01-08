@@ -1,5 +1,5 @@
 # Telegram-plugin-version-robot 🤖 (V1.0 暴力引擎版)
-基于 Python + Telethon + python-telegram-bot 构建的**高自由度 Telegram 综合管理机器人**，核心采用「MTProto 底层监控层 + Bot API 上层指令交互层」解耦架构，突破纯 Bot API 功能限制，支持全量消息监控、高速媒体下载、插件化扩展，**必须完成 MTProto 登录解锁全部功能**。
+基于 Python + Telethon + python-telegram-bot 构建的**高自由度 Telegram 综合管理机器人**，核心采用「MTProto 底层监控层 + Bot API 上层指令交互层」解耦架构，突破纯 Bot API 功能限制，支持全量消息监控、高速媒体下载、插件化扩展，**必须完成 MTProto 登录解锁全部功能**。非常适合小白二次开发，在只添加插件的情况下实现想要的功能及命令。二次开发注意样板格式，不要阻塞bot通讯即可。插件不相互依赖，删除不要的插件其它插件照常使用。
 
 ---
 
