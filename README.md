@@ -55,6 +55,75 @@ graph TD
 ---
 
 ## 📂 详细目录/文件说明
+### 结构
+```
+Telegram-插件-版本-机器人/
+├── .env.example               # 配置文件示例（复制为.env后修改）：存储Bot Token/API ID等核心参数
+├── .gitattributes             # Git 属性配置：指定文件编码、换行符等
+├── .gitignore                 # Git 忽略文件：指定无需提交的文件（如.env、日志、会话文件）
+├── docker-compose.yml         # Docker 容器编排文件：一键部署、数据持久化、自动重启配置
+├── Dockerfile                 # Docker 镜像构建文件：定义Python环境、依赖安装、启动命令
+├── main.py                    # 项目唯一启动入口：初始化核心模块、启动Bot/MTProto客户端
+├── README.md                  # 项目说明文档：部署指南、功能清单、使用教程
+├── requirements.txt           # 依赖清单（版本锁定）：列出所有必需的Python库及兼容版本
+├── bootstrap/                 # 启动器模块：负责项目初始化流程
+│   ├── launcher.py            # 核心启动逻辑：加载配置、初始化客户端、启动插件扫描
+│   └── __init__.py            # 模块标识文件：使bootstrap成为Python包
+├── core/                      # 核心驱动层：框架核心逻辑（配置、客户端、插件、工具等）
+│   ├── client_manager.py      # 客户端生命周期管理：初始化Bot API/MTProto客户端、处理启停/重连
+│   ├── command_registry.py    # 指令注册中心：统一管理所有插件的指令处理器（避免冲突）
+│   ├── config_manager.py      # 配置管理：读取.env文件、提供全局配置访问接口、配置持久化
+│   ├── exceptions.py          # 自定义异常类：定义项目专属异常（如配置缺失、登录失败）
+│   ├── logger.py              # 日志系统：配置日志格式、分级输出、插件日志分流（按模块存储）
+│   ├── mtproto_client.py      # MTProto客户端封装：直连Telegram底层协议、登录/下载/监听实现
+│   ├── plugin_scanner.py      # 插件扫描器：自动扫描features/目录、热加载插件、语法校验
+│   ├── utils.py               # 通用工具函数：权限校验、手机号格式验证、字符串脱敏、路径处理
+│   ├── validator.py           # 配置校验：验证.env文件中核心参数（如API ID格式、Bot Token有效性）
+│   └── __init__.py            # 模块标识文件：使core成为Python包，导出核心类
+├── features/                  # 官方插件目录：所有功能以插件形式模块化实现（解耦业务逻辑）
+│   ├── __init__.py            # 模块标识文件：使features成为Python包
+│   ├── admin/                 # 管理员功能插件：仅管理员可使用的高级功能
+│   │   ├── admin_manager.py   # 管理员权限管理：添加/查看管理员（/add_admin、/admins）
+│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
+│   │   ├── help_manager.py    # 开发手册插件：生成插件开发模板（/cj指令）
+│   │   ├── plugin_manager.py  # 插件管理功能：热安装/重载/查看插件（/add_plugin、/plugins）
+│   │   └── __init__.py        # 插件模块标识：注册admin插件组
+│   ├── basic/                 # 基础指令插件：所有用户可使用的通用指令
+│   │   ├── basic_manager.py   # 基础功能实现：/start、/ping、/id、/status、/disk、/python
+│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
+│   │   └── __init__.py        # 插件模块标识：注册basic插件组
+│   ├── downloader/            # 下载核心插件：MTProto暴力下载功能
+│   │   ├── at_downloader.py   # 自动转发下载：监听转发媒体，批量自动下载（无需指令）
+│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
+│   │   ├── mt_downloader.py   # 手动/监控下载：/dl、/dl_all、/dls等指令实现，支持频道搜刮
+│   │   └── __init__.py        # 插件模块标识：注册downloader插件组
+│   ├── forwarder/             # 超级转发器插件：监控源群，定时清洗转发到目标群
+│   │   ├── forward_manager.py # 转发功能实现：/fw_src、/fw_dst、/fw_task等指令
+│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
+│   │   └── __init__.py        # 插件模块标识：注册forwarder插件组
+│   ├── help_auto/             # 自动帮助插件：聚合所有插件的help.txt生成统一/帮助菜单
+│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
+│   │   ├── help_manager.py    # 帮助功能实现：/help指令核心逻辑，扫描所有help.txt
+│   │   └── __init__.py        # 插件模块标识：注册help_auto插件组
+│   ├── mtproto/               # MTProto登录插件：处理MTProto账号登录
+│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
+│   │   ├── login_manager.py   # 登录功能实现：/mtlogin指令，处理手机号/验证码/两步验证
+│   │   └── __init__.py        # 插件模块标识：注册mtproto插件组
+│   └── promo/                 # 智能推广插件：监控群组消息，按规则自动推广素材
+│       ├── help.txt           # 插件帮助文档：自动被/help指令聚合
+│       ├── smart_promo.py     # 推广功能实现：/tg_save、/tg_push、/tg_task_list等指令
+│       └── __init__.py        # 插件模块标识：注册promo插件组
+├── download/                  # 下载文件存储目录：按「源ID/频道名」自动分目录，默认存储路径
+│   └── download_tasks.db      # 下载任务数据库：记录下载任务状态、断点续传信息
+├── logs/                      # 日志存储目录：分模块存储日志，便于问题排查
+│   ├── openbot_main.log       # 主日志文件：记录核心框架运行日志（如启动/停止/全局错误）
+│   └── plugins/               # 插件日志目录：按插件模块分日志文件（如admin/、downloader/）
+├── sessions/                  # MTProto会话存储目录：持久化登录凭证
+│   └── openbot.session        # MTProto会话文件：登录成功后生成，删除需重新登录
+├── 推广数据/                  # 智能推广插件数据目录：存储素材库、模式库、任务配置（JSON文件）
+└── 转发数据/                  # 超级转发器插件数据目录：存储转发规则、待发缓存
+    └── temp_media/            # 转发临时媒体目录：缓存转发过程中的媒体文件
+
 ### 核心目录结构
 ```
 Telegram-plugin-version-robot/
@@ -213,72 +282,7 @@ docker exec -it telegram-robot python main.py
 
 ---
 
-Telegram-插件-版本-机器人/
-├── .env.example               # 配置文件示例（复制为.env后修改）：存储Bot Token/API ID等核心参数
-├── .gitattributes             # Git 属性配置：指定文件编码、换行符等
-├── .gitignore                 # Git 忽略文件：指定无需提交的文件（如.env、日志、会话文件）
-├── docker-compose.yml         # Docker 容器编排文件：一键部署、数据持久化、自动重启配置
-├── Dockerfile                 # Docker 镜像构建文件：定义Python环境、依赖安装、启动命令
-├── main.py                    # 项目唯一启动入口：初始化核心模块、启动Bot/MTProto客户端
-├── README.md                  # 项目说明文档：部署指南、功能清单、使用教程
-├── requirements.txt           # 依赖清单（版本锁定）：列出所有必需的Python库及兼容版本
-├── bootstrap/                 # 启动器模块：负责项目初始化流程
-│   ├── launcher.py            # 核心启动逻辑：加载配置、初始化客户端、启动插件扫描
-│   └── __init__.py            # 模块标识文件：使bootstrap成为Python包
-├── core/                      # 核心驱动层：框架核心逻辑（配置、客户端、插件、工具等）
-│   ├── client_manager.py      # 客户端生命周期管理：初始化Bot API/MTProto客户端、处理启停/重连
-│   ├── command_registry.py    # 指令注册中心：统一管理所有插件的指令处理器（避免冲突）
-│   ├── config_manager.py      # 配置管理：读取.env文件、提供全局配置访问接口、配置持久化
-│   ├── exceptions.py          # 自定义异常类：定义项目专属异常（如配置缺失、登录失败）
-│   ├── logger.py              # 日志系统：配置日志格式、分级输出、插件日志分流（按模块存储）
-│   ├── mtproto_client.py      # MTProto客户端封装：直连Telegram底层协议、登录/下载/监听实现
-│   ├── plugin_scanner.py      # 插件扫描器：自动扫描features/目录、热加载插件、语法校验
-│   ├── utils.py               # 通用工具函数：权限校验、手机号格式验证、字符串脱敏、路径处理
-│   ├── validator.py           # 配置校验：验证.env文件中核心参数（如API ID格式、Bot Token有效性）
-│   └── __init__.py            # 模块标识文件：使core成为Python包，导出核心类
-├── features/                  # 官方插件目录：所有功能以插件形式模块化实现（解耦业务逻辑）
-│   ├── __init__.py            # 模块标识文件：使features成为Python包
-│   ├── admin/                 # 管理员功能插件：仅管理员可使用的高级功能
-│   │   ├── admin_manager.py   # 管理员权限管理：添加/查看管理员（/add_admin、/admins）
-│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
-│   │   ├── help_manager.py    # 开发手册插件：生成插件开发模板（/cj指令）
-│   │   ├── plugin_manager.py  # 插件管理功能：热安装/重载/查看插件（/add_plugin、/plugins）
-│   │   └── __init__.py        # 插件模块标识：注册admin插件组
-│   ├── basic/                 # 基础指令插件：所有用户可使用的通用指令
-│   │   ├── basic_manager.py   # 基础功能实现：/start、/ping、/id、/status、/disk、/python
-│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
-│   │   └── __init__.py        # 插件模块标识：注册basic插件组
-│   ├── downloader/            # 下载核心插件：MTProto暴力下载功能
-│   │   ├── at_downloader.py   # 自动转发下载：监听转发媒体，批量自动下载（无需指令）
-│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
-│   │   ├── mt_downloader.py   # 手动/监控下载：/dl、/dl_all、/dls等指令实现，支持频道搜刮
-│   │   └── __init__.py        # 插件模块标识：注册downloader插件组
-│   ├── forwarder/             # 超级转发器插件：监控源群，定时清洗转发到目标群
-│   │   ├── forward_manager.py # 转发功能实现：/fw_src、/fw_dst、/fw_task等指令
-│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
-│   │   └── __init__.py        # 插件模块标识：注册forwarder插件组
-│   ├── help_auto/             # 自动帮助插件：聚合所有插件的help.txt生成统一/帮助菜单
-│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
-│   │   ├── help_manager.py    # 帮助功能实现：/help指令核心逻辑，扫描所有help.txt
-│   │   └── __init__.py        # 插件模块标识：注册help_auto插件组
-│   ├── mtproto/               # MTProto登录插件：处理MTProto账号登录
-│   │   ├── help.txt           # 插件帮助文档：自动被/帮助指令聚合
-│   │   ├── login_manager.py   # 登录功能实现：/mtlogin指令，处理手机号/验证码/两步验证
-│   │   └── __init__.py        # 插件模块标识：注册mtproto插件组
-│   └── promo/                 # 智能推广插件：监控群组消息，按规则自动推广素材
-│       ├── help.txt           # 插件帮助文档：自动被/help指令聚合
-│       ├── smart_promo.py     # 推广功能实现：/tg_save、/tg_push、/tg_task_list等指令
-│       └── __init__.py        # 插件模块标识：注册promo插件组
-├── download/                  # 下载文件存储目录：按「源ID/频道名」自动分目录，默认存储路径
-│   └── download_tasks.db      # 下载任务数据库：记录下载任务状态、断点续传信息
-├── logs/                      # 日志存储目录：分模块存储日志，便于问题排查
-│   ├── openbot_main.log       # 主日志文件：记录核心框架运行日志（如启动/停止/全局错误）
-│   └── plugins/               # 插件日志目录：按插件模块分日志文件（如admin/、downloader/）
-├── sessions/                  # MTProto会话存储目录：持久化登录凭证
-│   └── openbot.session        # MTProto会话文件：登录成功后生成，删除需重新登录
-├── 推广数据/                  # 智能推广插件数据目录：存储素材库、模式库、任务配置（JSON文件）
-└── 转发数据/                  # 超级转发器插件数据目录：存储转发规则、待发缓存
-    └── temp_media/            # 转发临时媒体目录：缓存转发过程中的媒体文件
+
 
 ## ⚠️ 核心注意事项
 ### 1. 安全防护
