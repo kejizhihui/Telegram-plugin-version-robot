@@ -315,4 +315,4 @@ docker exec -it telegram-robot python main.py
 1. GitHub 仓库提交 Issue；
 
 支持一下！
-photo_url = "https://free.wzznft.com/i/2025/12/19/oz7peb.png"
+<img src="https://raw.githubusercontent.com/kejizhihui/Image/main/wx.png"/>
