@@ -313,6 +313,6 @@ docker exec -it telegram-robot python main.py
 ## 📞 问题反馈
 若遇到 Bug 或有功能建议，可通过以下方式反馈：
 1. GitHub 仓库提交 Issue；
-2. 联系管理员（配置文件中 `ADMIN_ID` 对应的 Telegram 账号）。
 
-> 🚀 祝使用愉快！如果觉得项目好用，欢迎给 GitHub 仓库点个 Star ⭐～
+支持一下！
+photo_url = "https://free.wzznft.com/i/2025/12/19/oz7peb.png"
