@@ -315,4 +315,5 @@ docker exec -it telegram-robot python main.py
 1. GitHub 仓库提交 Issue；
 
 支持一下！
-<img src="https://raw.githubusercontent.com/kejizhihui/Image/main/wx.png"/>
+<!-- 示例：宽度300px，高度自动 -->
+<img src="https://raw.githubusercontent.com/kejizhihui/Image/main/wx.png" width="50" />
